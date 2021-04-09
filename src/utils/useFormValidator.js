@@ -1,36 +1,36 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const useFormValidator = (initialFormData, callback, validate) => {
   const [formData, setFormData] = useState(initialFormData);
-  //const [formErrors, setFormErrors] = useState({});
   const [formSubmitting, setFormSubmitting] = useState(false);
 
   const { errors } = formData;
 
   const onHandleChange = (e) => {
     const { name, value } = e.target;
-
     validate(name, value, errors);
+
+    console.log(errors);
     setFormData({
       ...formData,
+      errors,
       [name]: value,
     });
-    //setFormErrors(validate(formData));
   };
 
   const onHandleSubmit = (e) => {
     e.preventDefault();
     setFormSubmitting(true);
-    if (formSubmitting) {
-      return callback();
-    }
+    console.log(formSubmitting);
+    // Object.keys(errors).forEach((error) => {
+    //   console.log(error);
+    // });
+    // if (formSubmitting) {
+    //   return callback();
+    // }
   };
 
-  // useEffect(() => {
-  //   if (formSubmitting) {
-  //     return callback();
-  //   }
-  // }, [errors.value]);
+  useEffect(() => {}, []);
 
   return {
     onHandleSubmit,

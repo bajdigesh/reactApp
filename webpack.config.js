@@ -10,6 +10,7 @@ module.exports = {
     filename: "app.bundle.js",
     path: path.resolve(__dirname, "dist"),
   },
+  devtool: "source-map",
   devServer: {
     port: 8085,
     historyApiFallback: true,
@@ -20,7 +21,7 @@ module.exports = {
       template: "./public/index.html",
     }),
     new webpack.DefinePlugin({
-      "process.env.API_URL": JSON.stringify(process.env.API_URL),
+      "process.env": JSON.stringify(dotenv.config().parsed),
     }),
   ],
   module: {
