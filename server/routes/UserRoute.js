@@ -5,10 +5,10 @@ const mongoose = require("mongoose");
 const UserController = require("../controllers/UserController");
 
 router.get("/users", UserController.getUsersList);
-router.get("/users/:id", UserController.getUsersListById);
+router.get("/user/:id", UserController.getUserDetail);
 router.post("/user/add", UserController.addNewUser);
-router.get("/count/users", UserController.getUsersCount);
-router.delete("/user/delete/:id", UserController.deleteUser);
 router.put("/user/edit/:id", UserController.updateUser);
+router.delete("/user/delete/:id", UserController.deleteUser);
+router.get("/count/users", UserController.getUsersCount);
 
 module.exports = router;

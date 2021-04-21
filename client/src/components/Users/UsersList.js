@@ -5,23 +5,23 @@ const UsersList = ({ usersData, usersCount, deleteRecord }) => {
   const history = useHistory();
 
   const onEditUser = (userId) => {
-    history.push("/user/edit/" + userId);
+    history.push(`/user/edit/${userId}`);
   };
 
   return (
-    <div className="container py-5 px-3">
-      <div className="card rounded shadow-sm border-0 p-4">
+    <div className='container py-5 px-3'>
+      <div className='card rounded shadow-sm border-0 p-4'>
         {usersData && (
           <>
-            <div className="d-flex justify-content-between align-items-center">
+            <div className='d-flex justify-content-between align-items-center'>
               <h3>{usersCount} Users</h3>
-              <Link to="/user/add" className="text-primary font-weight-medium">
-                <i className="fas fa-plus"></i> Add User
+              <Link to='/user/add' className='text-primary font-weight-medium'>
+                <i className='fas fa-plus'></i> Add User
               </Link>
             </div>
             {usersCount > 0 ? (
-              <table className="table table-borderless table-sm table-striped table-hover">
-                <thead className="thead-dark">
+              <table className='table table-borderless table-sm table-striped table-hover'>
+                <thead className='thead-dark'>
                   <tr>
                     <th>Full Name</th>
                     <th>Username</th>
@@ -41,25 +41,24 @@ const UsersList = ({ usersData, usersCount, deleteRecord }) => {
                       <td>{user.email}</td>
                       <td>
                         <button
-                          className="text-primary mr-2"
+                          className='btn text-primary mr-2'
                           onClick={() => onEditUser(user._id)}
                         >
-                          <i className="fas fa-pencil"></i>
+                          <i className='fas fa-pencil'></i>
                         </button>
-                        <span
-                          style={{ cursor: "pointer" }}
-                          className="text-danger"
+                        <button
+                          className='btn text-danger'
                           onClick={() => deleteRecord(user._id)}
                         >
-                          <i className="fas fa-times"></i>
-                        </span>
+                          <i className='fas fa-times'></i>
+                        </button>
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             ) : (
-              <p className="alert alert-danger">No recordsFound</p>
+              <p className='alert alert-danger'>No recordsFound</p>
             )}
           </>
         )}

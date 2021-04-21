@@ -9,9 +9,8 @@ exports.getUsersList = (req, res) => {
   });
 };
 
-exports.getUsersListById = (req, res) => {
+exports.getUserDetail = (req, res) => {
   const userID = req.params.id;
-  // console.log(userID);
   usersData.find({ _id: userID }, (err, result) => {
     if (err) {
       res.send(err);

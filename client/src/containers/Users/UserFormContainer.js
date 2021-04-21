@@ -1,18 +1,16 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   onFetchUsers,
   onGetUsersCount,
-  updateUserCount,
+  updateUserCount
 } from "../../actions/userActions";
 import useApiHandler from "../../api/apiHandler";
-import AddUser from "../../components/Users/AddUser";
 import validate from "../../components/Users/validation";
 import useFormValidator from "../../utils/useFormValidator";
+import UserForm from "./../../components/Users/UserForm";
 
-const UserAddContainer = (props) => {
-  //const fullNameRef = useRef();
-
+const UserFormContainer = (props) => {
   const fullNameRef = useRef();
   const userNameRef = useRef();
   const contactRef = useRef();
@@ -21,9 +19,8 @@ const UserAddContainer = (props) => {
 
   const dispatch = useDispatch();
   const usersCount = useSelector((state) => state.count);
-  const userData = useSelector((state) => state.usersData);
-
-  console.log(userData);
+  const [selectedUserData, setSelectedUserData] = useState({});
+  // const userData = useSelector((state) => state.usersData);
 
   const clearForm = () => {
     fullNameRef.current.value = "";
@@ -36,8 +33,6 @@ const UserAddContainer = (props) => {
 
   const { id } = props.match.params;
   const userId = id ? id : "";
-
-  //console.log(props);
 
   const initialState = {
     full_name: "",
@@ -91,16 +86,20 @@ const UserAddContainer = (props) => {
       });
   }, [formSubmit]);
 
-  const onGetUserListById = (userId) => {
-    useApiHandler(`http://localhost:3030/api/users/${userId}`, "get")
+  const onGetUserById = (userId) => {
+    useApiHandler(`http://localhost:3030/api/user/${userId}`, "get")
       .then((result) => {
-        // console.log("Result", result);
+        setSelectedUserData(result[0]);
         dispatch(onFetchUsers(result));
       })
       .catch((err) => {
         console.log("Get Users", err);
       });
   };
+
+  useEffect(() => {
+    onGetUserById(userId);
+  }, [userId]);
 
   const { onInputChange, onSubmitForm, errors, formState } = useFormValidator(
     initialState,
@@ -110,12 +109,11 @@ const UserAddContainer = (props) => {
 
   return (
     <>
-      <AddUser
+      <UserForm
         usersCount={usersCount}
         onInputChange={onInputChange}
         errors={errors}
         onSubmitForm={onSubmitForm}
-        onGetUserListById={onGetUserListById}
         userId={userId}
         formState={formState}
         fullNameRef={fullNameRef}
@@ -123,10 +121,10 @@ const UserAddContainer = (props) => {
         contactRef={contactRef}
         emailRef={emailRef}
         addressRef={addressRef}
-        userData={userData}
+        selectedUserData={selectedUserData}
       />
     </>
   );
 };
 
-export default UserAddContainer;
+export default UserFormContainer;
