@@ -5,12 +5,18 @@ const useFormValidator = (initialState, validate, callback) => {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  useEffect(() => {
+    setFormState(initialState);
+  }, [initialState]);
+
   const onInputChange = (e) => {
+    //e.preventDefault();
     const { name, value } = e.target;
     setFormState({
       ...formState,
       [name]: value,
     });
+    console.log("FORM VALIDATOR => ", formState);
   };
 
   const onSubmitForm = (e) => {

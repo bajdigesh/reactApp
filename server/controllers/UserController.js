@@ -49,10 +49,17 @@ exports.deleteUser = (req, res) => {
 
 exports.updateUser = (req, res) => {
   let data = req.body;
-  usersData.updateOne(data, (err) => {
+
+  usersData.updateOne({ _id: req.params.id }, { $set: data }, (err) => {
     if (err) {
       throw new Error(err);
     }
     res.json("Data inserted");
   });
+  /* usersData.updateOne(data, (err) => {
+    if (err) {
+      throw new Error(err);
+    }
+    res.json("Data inserted");
+  }); */
 };

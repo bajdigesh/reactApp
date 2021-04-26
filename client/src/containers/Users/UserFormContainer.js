@@ -1,9 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useHistory } from "react-router";
 import {
-  onFetchUsers,
+  getUserById,
   onGetUsersCount,
-  updateUserCount
+  updateUserCount,
 } from "../../actions/userActions";
 import useApiHandler from "../../api/apiHandler";
 import validate from "../../components/Users/validation";
@@ -11,6 +12,10 @@ import useFormValidator from "../../utils/useFormValidator";
 import UserForm from "./../../components/Users/UserForm";
 
 const UserFormContainer = (props) => {
+  const { id } = props.match.params;
+  const userId = id ? id : "";
+
+  const history = useHistory();
   const fullNameRef = useRef();
   const userNameRef = useRef();
   const contactRef = useRef();
@@ -19,8 +24,8 @@ const UserFormContainer = (props) => {
 
   const dispatch = useDispatch();
   const usersCount = useSelector((state) => state.count);
-  const [selectedUserData, setSelectedUserData] = useState({});
-  // const userData = useSelector((state) => state.usersData);
+
+  const userData = useSelector((state) => state.userData[0]);
 
   const clearForm = () => {
     fullNameRef.current.value = "";
@@ -31,16 +36,20 @@ const UserFormContainer = (props) => {
     fullNameRef.current.focus();
   };
 
-  const { id } = props.match.params;
-  const userId = id ? id : "";
+  const initialState = useMemo(
+    () => ({
+      full_name: userData ? userData.full_name : "",
+      username: userData ? userData.username : "",
+      contact: userData ? userData.contact : "",
+      address: userData ? userData.address : "",
+      email: userData ? userData.email : "",
+      gender: userData ? userData.gender : "",
+      role: userData ? userData.role : "",
+    }),
+    [userData]
+  );
 
-  const initialState = {
-    full_name: "",
-    username: "",
-    address: "",
-    contact: "",
-    email: "",
-  };
+  //console.log(userData);
 
   const formSubmit = () => {
     let data = {
@@ -49,6 +58,8 @@ const UserFormContainer = (props) => {
       address: formState.address,
       contact: formState.contact,
       email: formState.email,
+      gender: formState.gender,
+      role: formState.role,
     };
     if (userId) {
       useApiHandler(
@@ -58,6 +69,7 @@ const UserFormContainer = (props) => {
       )
         .then((result) => {
           console.log(result);
+          history.push("/");
         })
         .catch((err) => {
           throw new Error(err);
@@ -68,6 +80,7 @@ const UserFormContainer = (props) => {
           if (result) {
             clearForm();
             dispatch(updateUserCount(usersCount));
+            history.push("/");
           }
         })
         .catch((err) => {
@@ -75,6 +88,20 @@ const UserFormContainer = (props) => {
         });
     }
   };
+
+  const onGetUserById = (userId) => {
+    useApiHandler(`http://localhost:3030/api/user/${userId}`, "get")
+      .then((result) => {
+        dispatch(getUserById(result));
+      })
+      .catch((err) => {
+        console.log("Get Users", err);
+      });
+  };
+
+  useEffect(() => {
+    onGetUserById(userId);
+  }, [onGetUserById]);
 
   useEffect(() => {
     useApiHandler("http://localhost:3030/api/count/users", "get")
@@ -86,25 +113,11 @@ const UserFormContainer = (props) => {
       });
   }, [formSubmit]);
 
-  const onGetUserById = (userId) => {
-    useApiHandler(`http://localhost:3030/api/user/${userId}`, "get")
-      .then((result) => {
-        setSelectedUserData(result[0]);
-        dispatch(onFetchUsers(result));
-      })
-      .catch((err) => {
-        console.log("Get Users", err);
-      });
-  };
-
-  useEffect(() => {
-    onGetUserById(userId);
-  }, [userId]);
-
   const { onInputChange, onSubmitForm, errors, formState } = useFormValidator(
     initialState,
     validate,
-    formSubmit
+    formSubmit,
+    userId
   );
 
   return (
@@ -121,7 +134,7 @@ const UserFormContainer = (props) => {
         contactRef={contactRef}
         emailRef={emailRef}
         addressRef={addressRef}
-        selectedUserData={selectedUserData}
+        userData={userData}
       />
     </>
   );
